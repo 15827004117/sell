@@ -6,6 +6,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
@@ -21,12 +23,12 @@ public class OrderMasterDaoTest {
     @Test
     public void save(){
         OrderMaster master = new OrderMaster();
-        master.setOrderId("dd201812112010");
+        master.setOrderId("ll201812112010");
         master.setBuyerName("大师兄");
-        master.setBuyerPhone("15827001444");
-        master.setBuyerAddress("北京市海淀区中关村理想国际大厦22-105");
-        master.setOpenId("SW484AJI56");
-        master.setOrderAmount(new BigDecimal(21.00));
+        master.setBuyerPhone("15921234567");
+        master.setBuyerAddress("北京市海淀区中关村理想大厦");
+        master.setBuyerOpenid("123456");
+        master.setOrderAmount(new BigDecimal(9.9));
 
         OrderMaster result = dao.save(master);
         Assert.assertNotNull(result);
@@ -35,8 +37,8 @@ public class OrderMasterDaoTest {
 
     @Test
     public void findByBuyerOpenId() {
-
-
+        Page<OrderMaster> result = dao.findByBuyerOpenid("456789",PageRequest.of(0,3));
+        Assert.assertNotEquals(0,result.getTotalElements());
 
     }
 }

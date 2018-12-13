@@ -22,7 +22,7 @@ public class OrderDetail {
     @Id
     private String detailId;    //
 
-    private String orderID;     //订单id
+    private String orderId;     //订单id
 
     private String productId;   //商品id
 

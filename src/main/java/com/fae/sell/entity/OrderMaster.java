@@ -30,7 +30,7 @@ public class OrderMaster {
 
     private String buyerAddress;    //买家地址
 
-    private String openId; //买家微信openId
+    private String buyerOpenid; //买家微信openId
 
     private BigDecimal orderAmount; //订单总金额
 
