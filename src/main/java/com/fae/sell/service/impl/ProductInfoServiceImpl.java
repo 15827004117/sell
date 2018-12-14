@@ -1,13 +1,17 @@
 package com.fae.sell.service.impl;
 
 import com.fae.sell.dao.ProductInfoDao;
+import com.fae.sell.dto.CartDTO;
 import com.fae.sell.entity.ProductInfo;
 import com.fae.sell.enums.ProductSatatsEnum;
+import com.fae.sell.enums.ResultEnum;
+import com.fae.sell.exception.SellException;
 import com.fae.sell.service.ProductInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,5 +46,46 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     @Override
     public ProductInfo save(ProductInfo productCategory) {
         return dao.save(productCategory);
+    }
+
+    /**
+     * 功能描述: 加库存
+     * @参数:
+     * @返回:
+     * @作者: lj
+     * @创建时间: 2018/12/14 14:19
+     */
+    @Override
+    @Transactional
+    public void increaseStock(List<CartDTO> cartDTOList) {
+
+    }
+
+    /**
+     * 功能描述: 减库存
+     * @参数:
+     * @返回:
+     * @作者: lj
+     * @创建时间: 2018/12/14 14:19
+     */
+    @Override
+    @Transactional
+    public void decreaseStock(List<CartDTO> cartDTOList) {
+        for (CartDTO cartDTO: cartDTOList){
+            Optional<ProductInfo> productInfo = dao.findById(cartDTO.getProductId());
+            // 判断是否有商品
+            if(productInfo.isPresent() == false){
+                throw new SellException(ResultEnum.PRODUCT_NOT_EXST);   //没有商品
+            }
+            // 库存 - 购物车订单
+            Integer result = productInfo.get().getProductStock() - cartDTO.getProductQuantity();
+            // 判断库存是否小于0
+            if(result < 0){
+                throw new SellException(ResultEnum.PRODUCT_STOCK_ERROR);    //库存不足
+            }
+            // 更新库存
+            productInfo.get().setProductStock(result);
+            dao.save(productInfo.orElse(null)) ;
+        }
     }
 }

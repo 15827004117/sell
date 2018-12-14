@@ -1,29 +1,23 @@
-package com.fae.sell.entity;
+package com.fae.sell.dto;
 
+import com.fae.sell.entity.OrderDetail;
 import com.fae.sell.enums.OrderStatusEnum;
 import com.fae.sell.enums.PayStatusEnum;
 import lombok.Data;
-import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 /**
- * 功能描述:订单详情实体类
+ * 功能描述:订单DTO
  *
- * @作者 lj
- * @日期 2018/12/11 0011 20:30
+ * @作者: lj
+ * @创建时间: 2018/12/14 9:28
  */
-@Entity
 @Data
-@DynamicUpdate
-public class OrderMaster {
+public class OrderDTO {
 
-    @Id
     private String orderId; //订单id
 
     private String buyerName;   //买家名称
@@ -36,12 +30,13 @@ public class OrderMaster {
 
     private BigDecimal orderAmount; //订单总金额
 
-    private Integer orderStatus = OrderStatusEnum.NEW.getCode();    //订单状态,默认为0，新订单
+    private Integer orderStatus;    //订单状态,默认为0，新订单
 
-    private Integer payStatus = PayStatusEnum.WAIT.getCode();  //支付状态,默认为0,未支付
+    private Integer payStatus;  //支付状态,默认为0,未支付
 
     private Date createTime;    //创建时间
 
     private Date updateTime;    //更新时间
 
+    private List<OrderDetail> orderDetailList;
 }

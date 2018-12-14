@@ -1,5 +1,6 @@
 package com.fae.sell.service;
 
+import com.fae.sell.dto.CartDTO;
 import com.fae.sell.entity.ProductInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,8 @@ public interface ProductInfoService {
     ProductInfo save(ProductInfo productCategory);
 
     //加库存
+    void increaseStock(List<CartDTO> cartDTOList);
 
     //减库存
+    void decreaseStock(List<CartDTO> cartDTOList);
 }

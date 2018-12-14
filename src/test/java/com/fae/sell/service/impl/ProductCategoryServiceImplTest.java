@@ -25,8 +25,7 @@ public class ProductCategoryServiceImplTest {
     @Test
     public void findById() {
         Optional<ProductCategory> category = service.findById(1);
-        Assert.assertEquals(new Integer(1),category.get().getCategoryId());
-        System.out.println(category);
+        System.out.println(category.get().getCategoryId());
     }
 
     @Test
