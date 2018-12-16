@@ -34,17 +34,24 @@ public class OrderServiceImplTest {
     public void create() {
         // 创建订单
         OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setBuyerName("三师姐");
-        orderDTO.setBuyerAddress("木袖");
-        orderDTO.setBuyerPhone("15812345678");
-        orderDTO.setBuyerOpenid(BUYER_OPENID);
+        orderDTO.setBuyerName("光明之子");
+        orderDTO.setBuyerAddress("隆庆");
+        orderDTO.setBuyerPhone("13977777777");
+        orderDTO.setBuyerOpenid("wx888xx79ad1x1");
 
         // 创建购物车
         List<OrderDetail> orderDetailList = new ArrayList<>();
-        OrderDetail orderDetail = new OrderDetail();
-        orderDetail.setProductId("ls201812022115001");  //商品
-        orderDetail.setProductQuantity(1);  //购买数量
-        orderDetailList.add(orderDetail);
+
+        OrderDetail orderDetail1 = new OrderDetail();
+        orderDetail1.setProductId("ls201812022115001");  //商品
+        orderDetail1.setProductQuantity(3);  //购买数量
+        orderDetailList.add(orderDetail1);
+
+        OrderDetail orderDetail2 = new OrderDetail();
+        orderDetail2.setProductId("ls201812022125002");  //商品
+        orderDetail2.setProductQuantity(1);  //购买数量
+        orderDetailList.add(orderDetail2);
+
         orderDTO.setOrderDetailList(orderDetailList);
 
         OrderDTO result = orderService.create(orderDTO);
