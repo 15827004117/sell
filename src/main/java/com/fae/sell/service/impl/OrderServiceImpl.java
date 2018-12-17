@@ -1,5 +1,6 @@
 package com.fae.sell.service.impl;
 
+import com.fae.sell.converter.OrderMasterToOrderDTOConverter;
 import com.fae.sell.dao.OrderDetailDao;
 import com.fae.sell.dao.OrderMasterDao;
 import com.fae.sell.dto.CartDTO;
@@ -14,12 +15,15 @@ import com.fae.sell.exception.SellException;
 import com.fae.sell.service.OrderService;
 import com.fae.sell.service.ProductInfoService;
 import com.fae.sell.utils.KeyUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -34,16 +38,17 @@ import java.util.stream.Collectors;
  * @创建时间: 2018/12/14 9:32
  */
 @Service
+@Slf4j
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
-    private ProductInfoService productInfoService;
+    private ProductInfoService productInfoService; //商品
 
     @Autowired
-    private OrderDetailDao orderDetailDao;
+    private OrderDetailDao orderDetailDao;  //订单商品
 
     @Autowired
-    private OrderMasterDao orderMasterDao;
+    private OrderMasterDao orderMasterDao;  // 订单
 
     /**
      * 功能描述:创建订单
@@ -66,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
             // 判断是否有商品
             if(productInfo.isPresent() == false){
                 // 没有商品，返回异常，并指定异常信息
-                throw new SellException(ResultEnum.PRODUCT_NOT_EXST);
+                throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);
             }
 
             // 2.计算订单总价 = 每个(商品单价 x 商品数量) + 订单总价
@@ -77,10 +82,8 @@ public class OrderServiceImpl implements OrderService {
             // 订单详情入库
             orderDetail.setDetailId(KeyUtil.genUniqueKye()); //设置订单商品id
             orderDetail.setOrderId(orderId);    // 设置订单id
-            //BeanUtils.copyProperties(productInfo,orderDetail); //设置其他id
-            orderDetail.setProductName(productInfo.get().getProductName()); // 商品名称
-            orderDetail.setProductPrice(productInfo.get().getProductPrice());
-            orderDetail.setProductIcon(productInfo.get().getProductIcon());
+            BeanUtils.copyProperties(productInfo.get(),orderDetail); //设置其他
+
             orderDetailDao.save(orderDetail);
         }
 
@@ -103,28 +106,159 @@ public class OrderServiceImpl implements OrderService {
         return orderDTO;
     }
 
+    /**
+     * 功能描述: 查询单个订单
+     * @参数:
+     * @返回:
+     * @作者: lj
+     * @创建时间: 2018/12/17 11:41
+     */
     @Override
+    @Transactional
     public OrderDTO findOne(String orderId) {
-        return null;
+        // 查询订单详情信息
+        Optional<OrderMaster> orderMaster = orderMasterDao.findById(orderId);
+        // 没有订单，返回异常，并指定异常信息
+        if(orderMaster.isPresent() == false) {
+            throw new SellException(ResultEnum.ORDER_NOT_EXIST);
+        }
+        // 查询订单商品详情
+        List<OrderDetail> orderDetailList = orderDetailDao.findByOrderId(orderId);
+        // 没有商品信息，返回异常，并指定异常信息
+        if(CollectionUtils.isEmpty(orderDetailList)) {
+            throw new SellException(ResultEnum.ORDER_NOT_EXIST);
+        }
+        // 数据封装
+        OrderDTO orderDTO = new OrderDTO();
+        BeanUtils.copyProperties(orderMaster.get(),orderDTO);
+        orderDTO.setOrderDetailList(orderDetailList);
+
+        return orderDTO;
     }
 
+    /**
+     * 功能描述: 查询订单列表
+     * @参数:
+     * @返回:
+     * @作者: lj
+     * @创建时间: 2018/12/17 11:41
+     */
     @Override
+    @Transactional
     public Page<OrderDTO> findList(String buyerOpenid, Pageable pageable) {
-        return null;
+        // 查询订单列表
+        Page<OrderMaster> orderMasterPage = orderMasterDao.findByBuyerOpenid(buyerOpenid, pageable);
+        // 数据封装
+        List<OrderDTO> orderDTOList = OrderMasterToOrderDTOConverter.convert(orderMasterPage.getContent());
+        Page<OrderDTO> orderDTOPage = new PageImpl<OrderDTO>(orderDTOList, pageable, orderMasterPage.getTotalElements());
+
+        return orderDTOPage;
     }
 
+    /**
+     * 功能描述: 取消订单
+     * @参数:
+     * @返回:
+     * @作者: lj
+     * @创建时间: 2018/12/17 11:42
+     */
     @Override
+    @Transactional
     public OrderDTO cancel(OrderDTO orderDTO) {
-        return null;
+        OrderMaster orderMaster = new OrderMaster();
+
+        // 判断订单状态
+        // 判断订单状态为新订单才能进行取消操作
+        if(!orderDTO.getOrderStatus().equals(OrderStatusEnum.NEW.getCode())) {
+            log.error("【取消订单】 订单状态不正确 orderId={}, orderStatus={}", orderDTO.getOrderId(), orderDTO.getOrderStatus());
+            throw new SellException(ResultEnum.ORDER_STATUS_ERROR);
+        }
+
+        // 修改订单状态
+        orderDTO.setOrderStatus(OrderStatusEnum.FINISHED.getCode());
+        BeanUtils.copyProperties(orderDTO,orderMaster);
+        OrderMaster result = orderMasterDao.save(orderMaster);
+        if(result == null) {
+            log.error("【取消订单】 更新失败 orderMaster={}", orderMaster);
+            throw new SellException(ResultEnum.ORDER_UPDATE_FAIL);
+        }
+
+        // 返还库存
+        if(CollectionUtils.isEmpty(orderDTO.getOrderDetailList())) {
+            log.error("【取消订单】 订单详情为空 orderDTO={}", orderDTO);
+            throw new SellException(ResultEnum.ORDER_DETAIL_EMPTY);
+        }
+        List<CartDTO> cartDTOList = orderDTO.getOrderDetailList().stream()
+                .map(e -> new CartDTO(e.getProductId(), e.getProductQuantity()))
+                .collect(Collectors.toList());
+        productInfoService.increaseStock(cartDTOList);
+
+        // 如已支付，需退款
+        if(orderDTO.getOrderStatus().equals(PayStatusEnum.SUCCESS)) {
+            //TODO
+        }
+        return orderDTO;
     }
 
+    /**
+     * 功能描述: 完结订单
+     * @参数:
+     * @返回:
+     * @作者: lj
+     * @创建时间: 2018/12/17 14:03
+     */
     @Override
+    @Transactional
     public OrderDTO finish(OrderDTO orderDTO) {
-        return null;
+        // 判断订单状态
+        if(!orderDTO.getOrderStatus().equals(OrderStatusEnum.NEW.getCode())) {
+            log.error("【完结订单】 订单状态错误 orderId={} orderStatus={}", orderDTO.getOrderId(), orderDTO.getOrderStatus());
+            throw new SellException(ResultEnum.ORDER_STATUS_ERROR);
+        }
+
+        // 修改订单状态
+        orderDTO.setOrderStatus(OrderStatusEnum.CANCEL.getCode());
+        OrderMaster orderMaster = new OrderMaster();
+        BeanUtils.copyProperties(orderDTO, orderMaster);
+        OrderMaster result = orderMasterDao.save(orderMaster);
+        if(result == null) {
+            log.error("【完结订单】 订单更新失败 orderMaster={}", orderMaster);
+            throw new SellException(ResultEnum.ORDER_UPDATE_FAIL);
+        }
+        return orderDTO;
     }
 
+    /**
+     * 功能描述: 订单支付成功
+     * @参数:
+     * @返回:
+     * @作者: lj
+     * @创建时间: 2018/12/17 14:39
+     */
     @Override
+    @Transactional
     public OrderDTO paid(OrderDTO orderDTO) {
-        return null;
+        // 判断订单状态
+        if(!orderDTO.getOrderStatus().equals(OrderStatusEnum.NEW.getCode())) {
+            log.error("【订单支付成功】 订单状态错误 orderId={} orderStatus={}", orderDTO.getOrderId(), orderDTO.getOrderStatus());
+            throw new SellException(ResultEnum.ORDER_STATUS_ERROR);
+        }
+
+        // 判断支付状态
+        if(!orderDTO.getPayStatus().equals(PayStatusEnum.WAIT.getCode())) {
+            log.error("【订单支付成功】 订单支付状态错误 orderDTO={}", orderDTO);
+            throw new SellException(ResultEnum.ORDER_PAY_STATUS_ERROR);
+        }
+
+        // 修改支付状态
+        orderDTO.setPayStatus(PayStatusEnum.SUCCESS.getCode());
+        OrderMaster orderMaster = new OrderMaster();
+        BeanUtils.copyProperties(orderDTO, orderMaster);
+        OrderMaster result = orderMasterDao.save(orderMaster);
+        if(result == null) {
+            log.error("【订单支付成功】 订单更新失败 orderMaster={}", orderMaster);
+            throw new SellException(ResultEnum.ORDER_UPDATE_FAIL);
+        }
+        return orderDTO;
     }
 }

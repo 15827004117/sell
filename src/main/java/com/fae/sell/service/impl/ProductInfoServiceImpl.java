@@ -58,7 +58,18 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     @Override
     @Transactional
     public void increaseStock(List<CartDTO> cartDTOList) {
-
+        for (CartDTO cartDTO: cartDTOList){
+            Optional<ProductInfo> productInfo = dao.findById(cartDTO.getProductId());
+            // 判断是否有商品
+            if(productInfo.isPresent() == false){
+                throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);   //没有商品
+            }
+            // 库存 + 购物车订单
+            Integer result = productInfo.get().getProductStock() + cartDTO.getProductQuantity();
+            // 更新库存
+            productInfo.get().setProductStock(result);
+            dao.save(productInfo.orElse(null)) ;
+        }
     }
 
     /**
@@ -75,7 +86,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
             Optional<ProductInfo> productInfo = dao.findById(cartDTO.getProductId());
             // 判断是否有商品
             if(productInfo.isPresent() == false){
-                throw new SellException(ResultEnum.PRODUCT_NOT_EXST);   //没有商品
+                throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);   //没有商品
             }
             // 库存 - 购物车订单
             Integer result = productInfo.get().getProductStock() - cartDTO.getProductQuantity();

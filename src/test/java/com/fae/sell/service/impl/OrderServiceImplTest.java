@@ -2,12 +2,17 @@ package com.fae.sell.service.impl;
 
 import com.fae.sell.dto.OrderDTO;
 import com.fae.sell.entity.OrderDetail;
+import com.fae.sell.enums.OrderStatusEnum;
+import com.fae.sell.enums.PayStatusEnum;
 import com.fae.sell.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
@@ -28,24 +33,21 @@ public class OrderServiceImplTest {
     @Autowired
     private OrderService orderService;
 
-    private final String BUYER_OPENID = "wx125754lj54as45"; //openId
+    private final String BUYER_OPENID = "wx778sx178c9s7"; // openId
+
+    private final String OEDER_ID = "1545029160961852939"; // orderId
 
     @Test
     public void create() {
         // 创建订单
         OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setBuyerName("光明之子");
-        orderDTO.setBuyerAddress("隆庆");
-        orderDTO.setBuyerPhone("13977777777");
-        orderDTO.setBuyerOpenid("wx888xx79ad1x1");
+        orderDTO.setBuyerName("莫山山");
+        orderDTO.setBuyerAddress("书痴");
+        orderDTO.setBuyerPhone("19311111111");
+        orderDTO.setBuyerOpenid("wx778sx178c9s7");
 
         // 创建购物车
         List<OrderDetail> orderDetailList = new ArrayList<>();
-
-        OrderDetail orderDetail1 = new OrderDetail();
-        orderDetail1.setProductId("ls201812022115001");  //商品
-        orderDetail1.setProductQuantity(3);  //购买数量
-        orderDetailList.add(orderDetail1);
 
         OrderDetail orderDetail2 = new OrderDetail();
         orderDetail2.setProductId("ls201812022125002");  //商品
@@ -61,21 +63,35 @@ public class OrderServiceImplTest {
 
     @Test
     public void findOne() {
+        OrderDTO result = orderService.findOne(OEDER_ID);
+        log.error(" 【查询单个订单】 result={}", result);
+        Assert.assertEquals(OEDER_ID,result.getOrderId());
     }
 
     @Test
     public void findList() {
+        Page<OrderDTO> orderDTOPage = orderService.findList("wx32x48542sdd7", PageRequest.of(0, 2));
+        Assert.assertNotEquals(2, orderDTOPage.getTotalElements());
     }
 
     @Test
     public void cancel() {
+        OrderDTO orderDTO = orderService.findOne(OEDER_ID);
+        OrderDTO result = orderService.cancel(orderDTO);
+        Assert.assertEquals(OrderStatusEnum.FINISHED.getCode(), result.getOrderStatus());
     }
 
     @Test
     public void finish() {
+        OrderDTO orderDTO = orderService.findOne(OEDER_ID);
+        OrderDTO result = orderService.finish(orderDTO);
+        Assert.assertEquals(OrderStatusEnum.CANCEL.getCode(), result.getOrderStatus());
     }
 
     @Test
     public void paid() {
+        OrderDTO orderDTO = orderService.findOne(OEDER_ID);
+        OrderDTO result = orderService.paid(orderDTO);
+        Assert.assertEquals(PayStatusEnum.SUCCESS.getCode(), result.getPayStatus());
     }
 }
