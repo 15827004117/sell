@@ -88,9 +88,59 @@ public class BuyerOrderController {
 
         return ResultVoUtil.success(orderDTOPage.getContent());
     }
-    // 订单详情
 
-    // 取消订单
+    /**
+     * 功能描述: 订单详情
+     * @参数:
+     * @返回:
+     * @作者: lj
+     * @创建时间: 2018/12/17 16:37
+     */
+    @GetMapping("/detail")
+    public ResultVO<List<OrderDTO>> detail(@RequestParam(value = "openid") String openId,
+                                           @RequestParam(value = "orderid") String orderId) {
+        // 判断openid不能为空
+        if(StringUtils.isEmpty(openId)) {
+            log.error("【订单详情查询】 openId为空");
+            throw new SellException(ResultEnum.PARAM_ERROR);
+        }
+        // 判断orderid不能为空
+        if(StringUtils.isEmpty(orderId)) {
+            log.error("【订单详情查询】 orderId为空");
+            throw new SellException(ResultEnum.PARAM_ERROR);
+        }
+        // 数据库操作
+        OrderDTO orderDTO = orderService.findOne(orderId);
+        return ResultVoUtil.success(orderDTO);
+
+    }
+
+    /**
+     * 功能描述: 取消订单
+     * @参数:
+     * @返回:
+     * @作者: lj
+     * @创建时间: 2018/12/17 16:37
+     */
+    @PostMapping("/cancel")
+    public ResultVO<List<OrderDTO>> cancel(@RequestParam(value = "openid") String openId,
+                                           @RequestParam(value = "orderid") String orderId) {
+        // 判断openid不能为空
+        if(StringUtils.isEmpty(openId)) {
+            log.error("【订单取消】 openId为空");
+            throw new SellException(ResultEnum.PARAM_ERROR);
+        }
+        // 判断orderid不能为空
+        if(StringUtils.isEmpty(orderId)) {
+            log.error("【订单取消】 orderId为空");
+            throw new SellException(ResultEnum.PARAM_ERROR);
+        }
+        // 数据库操作
+        OrderDTO orderDTO = orderService.findOne(orderId);
+        orderService.cancel(orderDTO);
+        return ResultVoUtil.success();
+
+    }
 
 
 }

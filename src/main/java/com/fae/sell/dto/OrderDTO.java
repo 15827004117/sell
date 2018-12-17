@@ -1,8 +1,10 @@
 package com.fae.sell.dto;
 
 import com.fae.sell.entity.OrderDetail;
-import com.fae.sell.enums.OrderStatusEnum;
-import com.fae.sell.enums.PayStatusEnum;
+import com.fae.sell.utils.serializer.DateToLongSerializer;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -16,6 +18,7 @@ import java.util.List;
  * @创建时间: 2018/12/14 9:28
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrderDTO {
 
     private String orderId; //订单id
@@ -34,8 +37,10 @@ public class OrderDTO {
 
     private Integer payStatus;  //支付状态,默认为0,未支付
 
+    @JsonFormat(pattern="yyyy-MM-dd hh:mm:ss",locale="zh",timezone="GMT+8")
     private Date createTime;    //创建时间
 
+    @JsonFormat(pattern="yyyy-MM-dd hh:mm:ss",locale="zh",timezone="GMT+8")
     private Date updateTime;    //更新时间
 
     private List<OrderDetail> orderDetailList;
