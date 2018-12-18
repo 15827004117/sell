@@ -6,6 +6,7 @@ import com.fae.sell.dto.OrderDTO;
 import com.fae.sell.enums.ResultEnum;
 import com.fae.sell.exception.SellException;
 import com.fae.sell.form.OrderForm;
+import com.fae.sell.service.BuyerService;
 import com.fae.sell.service.OrderService;
 import com.fae.sell.utils.ResultVoUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,9 @@ public class BuyerOrderController {
 
     @Autowired
     private OrderService orderService; //订单
+
+    @Autowired
+    private BuyerService buyerService; //买家
 
     /**
      * 功能描述: 创建订单
@@ -97,20 +101,20 @@ public class BuyerOrderController {
      * @创建时间: 2018/12/17 16:37
      */
     @GetMapping("/detail")
-    public ResultVO<List<OrderDTO>> detail(@RequestParam(value = "openid") String openId,
-                                           @RequestParam(value = "orderid") String orderId) {
+    public ResultVO<List<OrderDTO>> detail(@RequestParam(value = "openid") String openid,
+                                           @RequestParam(value = "orderid") String orderid) {
         // 判断openid不能为空
-        if(StringUtils.isEmpty(openId)) {
+        if(StringUtils.isEmpty(openid)) {
             log.error("【订单详情查询】 openId为空");
             throw new SellException(ResultEnum.PARAM_ERROR);
         }
         // 判断orderid不能为空
-        if(StringUtils.isEmpty(orderId)) {
+        if(StringUtils.isEmpty(orderid)) {
             log.error("【订单详情查询】 orderId为空");
             throw new SellException(ResultEnum.PARAM_ERROR);
         }
         // 数据库操作
-        OrderDTO orderDTO = orderService.findOne(orderId);
+        OrderDTO orderDTO = buyerService.findOrderOne(openid, orderid);
         return ResultVoUtil.success(orderDTO);
 
     }
@@ -136,8 +140,7 @@ public class BuyerOrderController {
             throw new SellException(ResultEnum.PARAM_ERROR);
         }
         // 数据库操作
-        OrderDTO orderDTO = orderService.findOne(orderId);
-        orderService.cancel(orderDTO);
+        buyerService.cancelOrder(openId, orderId);
         return ResultVoUtil.success();
 
     }
