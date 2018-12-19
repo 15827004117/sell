@@ -17,7 +17,7 @@ import java.net.URLEncoder;
 
 
 /**
- * 功能描述:
+ * 功能描述: 微信跳转controller
  *
  * @作者: lj
  * @创建时间: 2018/12/18 12:07
