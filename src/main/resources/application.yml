@@ -14,8 +14,8 @@ server:
     context-path: /sell
 
 wechat: #微信公众号
-  mpAppId: wxd898fcb01713c658
-  mpAppSecret: 29d8a650db31472aa87800e3b0d739f2
+  mpAppId: wxbc24d6e2305b993b
+  mpAppSecret: c0303b692afcf89e5e588b5f75549efe
   mchId: 1409146202
   mchKey: c976503d34ca432c601361f969fd8d85
   keyPath: /var/weixin_cert/h5.p12

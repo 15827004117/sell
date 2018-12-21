@@ -23,20 +23,18 @@ import java.net.URLEncoder;
  * @创建时间: 2018/12/18 12:07
  */
 @Controller
-@RequestMapping("/weichat")
+@RequestMapping("/wechat")
 @Slf4j
 public class WechatComtroller {
 
     @Autowired
     private WxMpService wxMpService;
 
-
-
     @GetMapping("/authorize")
     public String authorize(@RequestParam("returnUrl")String returnUrl) {
 
         // 配置
-        String url = "http://lijing.nat300.top/sell/weichat/userInfo";
+        String url = "http://lijing.nat300.top/sell/wechat/userInfo";
         // 调用方法
         String redirectUrl = wxMpService.oauth2buildAuthorizationUrl(url, WxConsts.OAUTH2_SCOPE_BASE, URLEncoder.encode(returnUrl));
 
