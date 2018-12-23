@@ -2,6 +2,7 @@ package com.fae.sell.service;
 
 import com.fae.sell.dto.OrderDTO;
 import com.lly835.bestpay.model.PayResponse;
+import com.lly835.bestpay.model.RefundResponse;
 
 /**
  * 功能描述: 微信支付
@@ -12,4 +13,8 @@ import com.lly835.bestpay.model.PayResponse;
 public interface PayService {
 
     PayResponse create(OrderDTO orderDTO);
+
+    PayResponse notify(String notifyData);
+
+    RefundResponse refund(OrderDTO orderDTO);
 }

@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 
 /**
- * 功能描述: 买家商品controller
+ * 功能描述: 买家端商品controller
  *
  * @作者 lj
  * @日期 2018/12/4 0004 19:35

@@ -17,7 +17,7 @@ import java.util.Map;
 
 
 /**
- * 功能描述: 微信支付controller
+ * 功能描述: 买家端微信支付controller
  *
  * @作者: lj
  * @创建时间: 2018/12/19 10:35
@@ -34,7 +34,7 @@ public class PayController {
     private PayService payService;
 
     /**
-     * 功能描述: 创建支付订单
+     * 功能描述: 创建微信支付订单
      * @参数:
      * @返回:
      * @作者: lj
@@ -58,9 +58,18 @@ public class PayController {
         return new ModelAndView("pay/create", map);
     }
 
-
+    /**
+     * 功能描述: 微信支付异步通知
+     * @参数:
+     * @返回:
+     * @作者: lj
+     * @创建时间: 2018/12/19 10:38
+     */
     @PostMapping("/notify")
-    public void notify(@RequestBody String notifyData) {
+    public ModelAndView notify(@RequestBody String notifyData) {
+        payService.notify(notifyData);
 
+        // 返回给微信处理结果
+        return new ModelAndView("pay/success");
     }
 }

@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 功能描述: 买家订单controller
+ * 功能描述: 买家端订单controller
  *
  * @作者 lj
  * @日期 2018/12/14 0014 20:27

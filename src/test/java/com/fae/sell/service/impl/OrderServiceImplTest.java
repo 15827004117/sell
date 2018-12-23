@@ -41,17 +41,17 @@ public class OrderServiceImplTest {
     public void create() {
         // 创建订单
         OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setBuyerName("莫山山");
-        orderDTO.setBuyerAddress("书痴");
-        orderDTO.setBuyerPhone("19311111111");
-        orderDTO.setBuyerOpenid("wx778sx178c9s7");
+        orderDTO.setBuyerName("四师兄");
+        orderDTO.setBuyerAddress("书院二层楼");
+        orderDTO.setBuyerPhone("13978456478");
+        orderDTO.setBuyerOpenid("wx878sdf4845");
 
         // 创建购物车
         List<OrderDetail> orderDetailList = new ArrayList<>();
 
         OrderDetail orderDetail2 = new OrderDetail();
-        orderDetail2.setProductId("ls201812022125002");  //商品
-        orderDetail2.setProductQuantity(1);  //购买数量
+        orderDetail2.setProductId("ls201812022115001");  //商品
+        orderDetail2.setProductQuantity(13);  //购买数量
         orderDetailList.add(orderDetail2);
 
         orderDTO.setOrderDetailList(orderDetailList);
@@ -93,5 +93,11 @@ public class OrderServiceImplTest {
         OrderDTO orderDTO = orderService.findOne(OEDER_ID);
         OrderDTO result = orderService.paid(orderDTO);
         Assert.assertEquals(PayStatusEnum.SUCCESS.getCode(), result.getPayStatus());
+    }
+
+    @Test
+    public void list() {
+        Page<OrderDTO> orderDTOPage = orderService.findList(PageRequest.of(0, 2));
+        Assert.assertNotEquals(2, orderDTOPage.getTotalElements());
     }
 }

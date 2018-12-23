@@ -13,6 +13,7 @@ import com.fae.sell.enums.PayStatusEnum;
 import com.fae.sell.enums.ResultEnum;
 import com.fae.sell.exception.SellException;
 import com.fae.sell.service.OrderService;
+import com.fae.sell.service.PayService;
 import com.fae.sell.service.ProductInfoService;
 import com.fae.sell.utils.KeyUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +50,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderMasterDao orderMasterDao;  // 订单
+
+    @Autowired
+    private PayService payService; //支付
 
     /**
      * 功能描述:创建订单
@@ -137,7 +141,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 功能描述: 查询订单列表
+     * 功能描述: 查询订单列表(根据openid查询)
      * @参数:
      * @返回:
      * @作者: lj
@@ -148,6 +152,25 @@ public class OrderServiceImpl implements OrderService {
     public Page<OrderDTO> findList(String buyerOpenid, Pageable pageable) {
         // 查询订单列表
         Page<OrderMaster> orderMasterPage = orderMasterDao.findByBuyerOpenid(buyerOpenid, pageable);
+        // 数据封装
+        List<OrderDTO> orderDTOList = OrderMasterToOrderDTOConverter.convert(orderMasterPage.getContent());
+        Page<OrderDTO> orderDTOPage = new PageImpl<OrderDTO>(orderDTOList, pageable, orderMasterPage.getTotalElements());
+
+        return orderDTOPage;
+    }
+
+    /**
+     * 功能描述: 查询订单列表(查全部)
+     * @参数:
+     * @返回:
+     * @作者: lj
+     * @创建时间: 2018/12/23 17:19
+     */
+    @Override
+    @Transactional
+    public Page<OrderDTO> findList(Pageable pageable) {
+        // 查询订单列表
+        Page<OrderMaster> orderMasterPage = orderMasterDao.findAll(pageable);
         // 数据封装
         List<OrderDTO> orderDTOList = OrderMasterToOrderDTOConverter.convert(orderMasterPage.getContent());
         Page<OrderDTO> orderDTOPage = new PageImpl<OrderDTO>(orderDTOList, pageable, orderMasterPage.getTotalElements());
@@ -195,7 +218,7 @@ public class OrderServiceImpl implements OrderService {
 
         // 如已支付，需退款
         if(orderDTO.getOrderStatus().equals(PayStatusEnum.SUCCESS)) {
-            //TODO
+            payService.refund(orderDTO);
         }
         return orderDTO;
     }

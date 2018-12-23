@@ -17,7 +17,7 @@ import java.net.URLEncoder;
 
 
 /**
- * 功能描述: 微信跳转controller
+ * 功能描述: 买家端微信功能controller
  *
  * @作者: lj
  * @创建时间: 2018/12/18 12:07
@@ -25,7 +25,7 @@ import java.net.URLEncoder;
 @Controller
 @RequestMapping("/wechat")
 @Slf4j
-public class WechatComtroller {
+public class WechatController {
 
     @Autowired
     private WxMpService wxMpService;
