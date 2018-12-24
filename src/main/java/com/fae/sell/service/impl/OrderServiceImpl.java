@@ -71,22 +71,22 @@ public class OrderServiceImpl implements OrderService {
 
         // 1.查询商品
         for (OrderDetail orderDetail: orderDTO.getOrderDetailList()){
-            Optional<ProductInfo> productInfo = productInfoService.findById(orderDetail.getProductId());
+            ProductInfo productInfo = productInfoService.findById(orderDetail.getProductId());
             // 判断是否有商品
-            if(productInfo.isPresent() == false){
+            if(productInfo == null){
                 // 没有商品，返回异常，并指定异常信息
                 throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);
             }
 
             // 2.计算订单总价 = 每个(商品单价 x 商品数量) + 订单总价
-            orderAmount = productInfo.get().getProductPrice()
+            orderAmount = productInfo.getProductPrice()
                     .multiply(new BigDecimal(orderDetail.getProductQuantity()))
                     .add(orderAmount);
 
             // 订单详情入库
             orderDetail.setDetailId(KeyUtil.genUniqueKye()); //设置订单商品id
             orderDetail.setOrderId(orderId);    // 设置订单id
-            BeanUtils.copyProperties(productInfo.get(),orderDetail); //设置其他
+            BeanUtils.copyProperties(productInfo,orderDetail); //设置其他
 
             orderDetailDao.save(orderDetail);
         }
@@ -121,9 +121,9 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderDTO findOne(String orderId) {
         // 查询订单详情信息
-        Optional<OrderMaster> orderMaster = orderMasterDao.findById(orderId);
+        OrderMaster orderMaster = orderMasterDao.getOne(orderId);
         // 没有订单，返回异常，并指定异常信息
-        if(orderMaster.isPresent() == false) {
+        if(orderMaster == null) {
             throw new SellException(ResultEnum.ORDER_NOT_EXIST);
         }
         // 查询订单商品详情
@@ -134,7 +134,7 @@ public class OrderServiceImpl implements OrderService {
         }
         // 数据封装
         OrderDTO orderDTO = new OrderDTO();
-        BeanUtils.copyProperties(orderMaster.get(),orderDTO);
+        BeanUtils.copyProperties(orderMaster,orderDTO);
         orderDTO.setOrderDetailList(orderDetailList);
 
         return orderDTO;

@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface ProductInfoService {
 
     //根据id查询
-    Optional<ProductInfo> findById(String productId);
+    ProductInfo findById(String productId);
 
     //查询所有
     Page<ProductInfo> findAll(Pageable pageable);

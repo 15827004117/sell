@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface ProductCategoryService {
 
     //根据id查询
-    Optional<ProductCategory> findById(Integer categoryId);
+    ProductCategory findById(Integer categoryId);
 
     //查询所有
     List<ProductCategory> findAll();

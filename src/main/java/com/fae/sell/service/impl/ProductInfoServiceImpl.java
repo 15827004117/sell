@@ -29,8 +29,8 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     private ProductInfoDao dao;
 
     @Override
-    public Optional<ProductInfo> findById(String productId) {
-        return dao.findById(productId);
+    public ProductInfo findById(String productId) {
+        return dao.getOne(productId);
     }
 
     @Override
@@ -59,16 +59,16 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     @Transactional
     public void increaseStock(List<CartDTO> cartDTOList) {
         for (CartDTO cartDTO: cartDTOList){
-            Optional<ProductInfo> productInfo = dao.findById(cartDTO.getProductId());
+            ProductInfo productInfo = dao.getOne(cartDTO.getProductId());
             // 判断是否有商品
-            if(productInfo.isPresent() == false){
+            if(productInfo == null){
                 throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);   //没有商品
             }
             // 库存 + 购物车订单
-            Integer result = productInfo.get().getProductStock() + cartDTO.getProductQuantity();
+            Integer result = productInfo.getProductStock() + cartDTO.getProductQuantity();
             // 更新库存
-            productInfo.get().setProductStock(result);
-            dao.save(productInfo.orElse(null)) ;
+            productInfo.setProductStock(result);
+            dao.save(productInfo);
         }
     }
 
@@ -83,20 +83,20 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     @Transactional
     public void decreaseStock(List<CartDTO> cartDTOList) {
         for (CartDTO cartDTO: cartDTOList){
-            Optional<ProductInfo> productInfo = dao.findById(cartDTO.getProductId());
+            ProductInfo productInfo = dao.getOne(cartDTO.getProductId());
             // 判断是否有商品
-            if(productInfo.isPresent() == false){
+            if(productInfo == null){
                 throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);   //没有商品
             }
             // 库存 - 购物车订单
-            Integer result = productInfo.get().getProductStock() - cartDTO.getProductQuantity();
+            Integer result = productInfo.getProductStock() - cartDTO.getProductQuantity();
             // 判断库存是否小于0
             if(result < 0){
                 throw new SellException(ResultEnum.PRODUCT_STOCK_ERROR);    //库存不足
             }
             // 更新库存
-            productInfo.get().setProductStock(result);
-            dao.save(productInfo.orElse(null)) ;
+            productInfo.setProductStock(result);
+            dao.save(productInfo);
         }
     }
 
@@ -112,19 +112,19 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     public ProductInfo onSale(String productId) {
 
         // 查询商品
-        Optional<ProductInfo> productInfo = dao.findById(productId);
+        ProductInfo productInfo = dao.getOne(productId);
 
         // 判断是否有该订单
-        if(!productInfo.isPresent()) {
+        if(productInfo == null) {
             throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);
         }
-        if(productInfo.get().getProductSatatsEnum() == ProductSatatsEnum.UP) {
+        if(productInfo.getProductSatatsEnum() == ProductSatatsEnum.UP) {
             throw new SellException(ResultEnum.PRODUCT_STATUS_ERROR);
         }
         // 修改商品状态(上架)
-        productInfo.get().setProductStatus(ProductSatatsEnum.UP.getCode());
+        productInfo.setProductStatus(ProductSatatsEnum.UP.getCode());
 
-        return dao.save(productInfo.orElse(null));
+        return dao.save(productInfo);
 
     }
 
@@ -140,18 +140,18 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     public ProductInfo offSale(String productId) {
 
         // 查询商品
-        Optional<ProductInfo> productInfo = dao.findById(productId);
+        ProductInfo productInfo = dao.getOne(productId);
 
         // 判断是否有该订单
-        if(!productInfo.isPresent()) {
+        if(productInfo == null) {
             throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);
         }
-        if(productInfo.get().getProductSatatsEnum() == ProductSatatsEnum.DOWN) {
+        if(productInfo.getProductSatatsEnum() == ProductSatatsEnum.DOWN) {
             throw new SellException(ResultEnum.PRODUCT_STATUS_ERROR);
         }
         // 修改商品状态(上架)
-        productInfo.get().setProductStatus(ProductSatatsEnum.DOWN.getCode());
+        productInfo.setProductStatus(ProductSatatsEnum.DOWN.getCode());
 
-        return dao.save(productInfo.orElse(null));
+        return dao.save(productInfo);
     }
 }

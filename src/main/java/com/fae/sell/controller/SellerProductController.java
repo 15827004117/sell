@@ -116,7 +116,7 @@ public class SellerProductController {
                               Map<String, Object> map) {
         // 判断传值是否为空
         if (!StringUtils.isEmpty(productId)) {
-            Optional<ProductInfo> productInfo = productInfoService.findById(productId);
+            ProductInfo productInfo = productInfoService.findById(productId);
             map.put("productInfo", productInfo);
         }
 

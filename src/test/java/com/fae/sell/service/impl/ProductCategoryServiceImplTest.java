@@ -24,8 +24,8 @@ public class ProductCategoryServiceImplTest {
 
     @Test
     public void findById() {
-        Optional<ProductCategory> category = service.findById(1);
-        System.out.println(category.get().getCategoryId());
+        ProductCategory category = service.findById(1);
+        System.out.println(category.getCategoryId());
     }
 
     @Test

@@ -26,7 +26,7 @@ public class ProductInfoServiceImplTest {
 
     @Test
     public void findById() {
-        Optional<ProductInfo> info = service.findById("ls201812022115001");
+        ProductInfo info = service.findById("ls201812022115001");
         System.out.println(info);
 
     }
