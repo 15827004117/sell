@@ -59,4 +59,16 @@ public class ProductInfoServiceImplTest {
         Assert.assertNotNull(result);
 
     }
+
+    @Test
+    public void onSale() {
+        ProductInfo result = service.onSale("ls201812022115001");
+        Assert.assertEquals(ProductSatatsEnum.UP,result.getProductSatatsEnum());
+    }
+
+    @Test
+    public void offSale() {
+        ProductInfo result = service.offSale("ls201812022115001");
+        Assert.assertEquals(ProductSatatsEnum.DOWN,result.getProductSatatsEnum());
+    }
 }

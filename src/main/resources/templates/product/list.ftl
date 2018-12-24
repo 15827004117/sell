@@ -15,33 +15,36 @@
                     <table class="table table-bordered table-condensed">
                         <thead>
                         <tr>
-                            <th>订单编号</th>
-                            <th>买家姓名</th>
-                            <th>买家手机</th>
-                            <th>买家地址</th>
-                            <th>订单金额</th>
-                            <th>订单状态</th>
-                            <th>支付状态</th>
+                            <th>商品编号</th>
+                            <th>名称</th>
+                            <th>图片</th>
+                            <th>单价</th>
+                            <th>库存</th>
+                            <th>描述</th>
+                            <th>类目</th>
                             <th>创建时间</th>
+                            <th>修改时间</th>
                             <th colspan="2">操作</th>
                         </tr>
                         </thead>
                         <tbody>
 
-                <#list orderDTOPage.content as dto>
+                <#list productInfoPage.content as dto>
                 <tr>
-                    <td>${dto.orderId}</td>
-                    <td>${dto.buyerName}</td>
-                    <td>${dto.buyerPhone}</td>
-                    <td>${dto.buyerAddress}</td>
-                    <td>${dto.orderAmount}</td>
-                    <td>${dto.getOrderStatusEnum().message}</td>
-                    <td>${dto.getPayStatusEnum().message}</td>
+                    <td>${dto.productId}</td>
+                    <td>${dto.productName}</td>
+                    <td><img src="${dto.productIcon}" height="100" width="100"></td>
+                    <td>${dto.productPrice}</td>
+                    <td>${dto.productStock}</td>
+                    <td>${dto.productDescription}</td>
+                    <td>${dto.getProductSatatsEnum().message}</td>
                     <td>${dto.createTime}</td>
-                    <td><a href="/sell/seller/order/detail?orderId=${dto.orderId}">详情</td>
-                    <td>
-                        <#if dto.getOrderStatusEnum().code ==0>
-                            <a href="/sell/seller/order/cancel?orderId=${dto.orderId}">取消</a>
+                    <td>${dto.updateTime}</td>
+                    <td><a href="/sell/seller/product/index?orderId=${dto.productId}">修改</td>
+                    <td><#if dto.productStatus == 0 >
+                            <a href="/sell/seller/product/off_sale?productId=${dto.productId}">下架</a>
+                        <#elseif dto.productStatus == 1 >
+                            <a href="/sell/seller/product/on_sale?productId=${dto.productId}">上架</a>
                         </#if>
                     </td>
                 </tr>
@@ -57,23 +60,23 @@
                 <#if curPage lte 1>
                 <li class="disabled"><a href="#">上一页</a></li>
                 <#else>
-                <li><a href="http://localhost:8080/sell/seller/order/list?page=${curPage - 1}&size=5">上一页</a></li>
+                <li><a href="http://localhost:8080/sell/seller/product/list?page=${curPage - 1}&size=5">上一页</a></li>
                 </#if>
 
                     <#--当前页-->
-                <#list 1..orderDTOPage.getTotalPages() as index>
+                <#list 1..productInfoPage.getTotalPages() as index>
                     <#if curPage == index>
                         <li class="disabled"><a href="#">${index}</a></li>
                     <#else>
-                        <li ><a href="http://localhost:8080/sell/seller/order/list?page=${index}&size=5">${index}</a></li>
+                        <li ><a href="http://localhost:8080/sell/seller/product/list?page=${index}&size=5">${index}</a></li>
                     </#if>
                 </#list>
 
                     <#--下一页-->
-                    <#if curPage gte orderDTOPage.getTotalPages()>
+                    <#if curPage gte productInfoPage.getTotalPages()>
                         <li class="disabled"><a href="#">下一页</a></li>
                     <#else>
-                        <li ><a href="http://localhost:8080/sell/seller/order/list?page=${curPage + 1}&size=5">下一页</a></li>
+                        <li ><a href="http://localhost:8080/sell/seller/product/list?page=${curPage + 1}&size=5">下一页</a></li>
                     </#if>
                     </ul>
                 </div>

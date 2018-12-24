@@ -28,10 +28,11 @@ import java.util.Map;
 public class SellerOrderController {
 
     @Autowired
-    private OrderService orderService;
+    private OrderService orderService; //订单
 
     /**
-     * 订单列表
+     * 功能描述: 订单列表
+     *
      * @param page 从第几页开始
      * @param size 每页显示条数
      * @return
@@ -51,9 +52,11 @@ public class SellerOrderController {
     }
 
     /**
-     * 取消订单
-     * @param orderId
-     * @return
+     * 功能描述: 取消订单
+     * @参数:
+     * @返回:
+     * @作者: lj
+     * @创建时间: 2018/12/24 8:57
      */
     @GetMapping("/cancel")
     public ModelAndView cancel(@RequestParam("orderId") String orderId,
@@ -67,14 +70,72 @@ public class SellerOrderController {
             // 订单不存在
             log.error("【卖家取消订单】 发生异常 {}", e);
             map.put("msg", e.getMessage());
-            map.put("url", "sell/seller/order/list");
+            map.put("url", "/sell/seller/order/list");
             // 错误返回
             return new ModelAndView("common/error", map);
         }
 
-        map.put("msg", ResultEnum.SUCCESS.getMessage());
-        map.put("url", "sell/seller/order/list");
+        map.put("msg", ResultEnum.ORDER_CANCEL_SUCCESS.getMessage());
+        map.put("url", "/sell/seller/order/list");
         // 成功返回
-        return new ModelAndView("common/success");
+        return new ModelAndView("common/success", map);
+    }
+
+    /**
+     * 功能描述: 查看订单详情
+     * @参数: orderId
+     * @返回:
+     * @作者: lj
+     * @创建时间: 2018/12/24 8:56
+     */
+    @GetMapping("/detail")
+    public ModelAndView detail(@RequestParam("orderId") String orderId,
+                               Map<String, Object> map) {
+        // 根据id查询订单
+        OrderDTO orderDTO = null;
+        try {
+            orderDTO = orderService.findOne(orderId);
+        } catch (Exception e) {
+            // 订单不存在
+            log.error("【查看订单详情】 发生异常 {}", e);
+            map.put("msg", e.getMessage());
+            map.put("url", "/sell/seller/order/list");
+            // 错误返回
+            return new ModelAndView("common/error", map);
+        }
+
+        map.put("orderDTO", orderDTO);
+
+        return new ModelAndView("order/detail", map);
+    }
+
+    /**
+     * 功能描述: 完结订单
+     * @参数: orderId
+     * @返回:
+     * @作者: lj
+     * @创建时间: 2018/12/24 9:42
+     */
+    @GetMapping("/finish")
+    public ModelAndView finish(@RequestParam("orderId") String orderId,
+                               Map<String, Object> map) {
+        // 查询订单
+        try {
+            OrderDTO orderDTO = orderService.findOne(orderId);
+            // 完结订单
+            orderService.finish(orderDTO);
+        } catch (SellException e) {
+            // 订单不存在
+            log.error("【卖家完结订单】 发生异常 {}", e);
+            map.put("msg", e.getMessage());
+            map.put("url", "/sell/seller/order/list");
+            // 错误返回
+            return new ModelAndView("common/error", map);
+        }
+
+        map.put("msg", ResultEnum.ORDER_FINISH_SUCCESS.getMessage());
+        map.put("url", "/sell/seller/order/list");
+        // 成功返回
+        return new ModelAndView("common/success", map);
     }
 }

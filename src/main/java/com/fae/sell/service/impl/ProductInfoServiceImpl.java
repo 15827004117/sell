@@ -99,4 +99,59 @@ public class ProductInfoServiceImpl implements ProductInfoService {
             dao.save(productInfo.orElse(null)) ;
         }
     }
+
+    /**
+     * 功能描述: 上架商品
+     * @参数:
+     * @返回:
+     * @作者: lj
+     * @创建时间: 2018/12/24 11:46
+     */
+    @Override
+    @Transactional
+    public ProductInfo onSale(String productId) {
+
+        // 查询商品
+        Optional<ProductInfo> productInfo = dao.findById(productId);
+
+        // 判断是否有该订单
+        if(!productInfo.isPresent()) {
+            throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);
+        }
+        if(productInfo.get().getProductSatatsEnum() == ProductSatatsEnum.UP) {
+            throw new SellException(ResultEnum.PRODUCT_STATUS_ERROR);
+        }
+        // 修改商品状态(上架)
+        productInfo.get().setProductStatus(ProductSatatsEnum.UP.getCode());
+
+        return dao.save(productInfo.orElse(null));
+
+    }
+
+    /**
+     * 功能描述: 下架商品
+     * @参数:
+     * @返回:
+     * @作者: lj
+     * @创建时间: 2018/12/24 11:46
+     */
+    @Override
+    @Transactional
+    public ProductInfo offSale(String productId) {
+
+        // 查询商品
+        Optional<ProductInfo> productInfo = dao.findById(productId);
+
+        // 判断是否有该订单
+        if(!productInfo.isPresent()) {
+            throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);
+        }
+        if(productInfo.get().getProductSatatsEnum() == ProductSatatsEnum.DOWN) {
+            throw new SellException(ResultEnum.PRODUCT_STATUS_ERROR);
+        }
+        // 修改商品状态(上架)
+        productInfo.get().setProductStatus(ProductSatatsEnum.DOWN.getCode());
+
+        return dao.save(productInfo.orElse(null));
+    }
 }
