@@ -2,6 +2,7 @@ package com.fae.sell.controller;
 
 import com.fae.sell.entity.ProductCategory;
 import com.fae.sell.entity.ProductInfo;
+import com.fae.sell.enums.ProductSatatsEnum;
 import com.fae.sell.enums.ResultEnum;
 import com.fae.sell.exception.SellException;
 import com.fae.sell.form.ProductForm;
@@ -165,6 +166,8 @@ public class SellerProductController {
             }
             // 拷贝
             BeanUtils.copyProperties(productForm, productInfo);
+            // 默认商品为上架状态
+            productInfo.setProductStatus(ProductSatatsEnum.UP.getCode());
             // 执行更新操作
             productInfoService.save(productInfo);
         } catch (Exception e) {

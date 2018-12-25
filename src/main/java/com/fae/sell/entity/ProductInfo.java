@@ -3,7 +3,6 @@ package com.fae.sell.entity;
 import com.fae.sell.enums.ProductSatatsEnum;
 import com.fae.sell.utils.EnumUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
 

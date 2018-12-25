@@ -39,7 +39,7 @@
                     <td>${dto.productDescription}</td>
                     <td>${dto.getProductSatatsEnum().message}</td>
                     <td>${dto.createTime}</td>
-                    <td>${dto.updateTime}</td>
+                    <td>${(dto.updateTime)!''}</td>
                     <td><a href="/sell/seller/product/index?orderId=${dto.productId}">修改</td>
                     <td><#if dto.productStatus == 0 >
                             <a href="/sell/seller/product/off_sale?productId=${dto.productId}">下架</a>

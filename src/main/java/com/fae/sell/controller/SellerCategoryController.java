@@ -1,21 +1,16 @@
 package com.fae.sell.controller;
 
-import com.fae.sell.dto.OrderDTO;
 import com.fae.sell.entity.ProductCategory;
-import com.fae.sell.entity.ProductInfo;
 import com.fae.sell.enums.ResultEnum;
 import com.fae.sell.form.CategoryForm;
-import com.fae.sell.form.ProductForm;
 import com.fae.sell.service.ProductCategoryService;
-import com.fae.sell.utils.KeyUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -80,7 +75,7 @@ public class SellerCategoryController {
      * @作者: lj
      * @创建时间: 2018/12/25 17:16
      */
-    @GetMapping("/save")
+    @PostMapping("/save")
     public ModelAndView save(@Valid CategoryForm categoryForm,
                              BindingResult bindingResult,
                              Map<String, Object> map) {
@@ -93,13 +88,10 @@ public class SellerCategoryController {
 
         ProductCategory productCategory = new ProductCategory();
         try {
-            //如果productId不为空，表示是修改操作
-            if(!StringUtils.isEmpty(productCategory.getCategoryId())) {
-                // 查询商品信息
+            //如果categoryId不为空，表示是修改操作
+            if(categoryForm.getCategoryId() != null) {
+                // 查询类目信息
                 productCategory = categoryService.findById(categoryForm.getCategoryId());
-            } else {
-                //如果productId为空，表示是新增操作,添加productId
-                //categoryForm.setProductId(KeyUtil.genUniqueKye());
             }
             // 拷贝
             BeanUtils.copyProperties(categoryForm, productCategory);
@@ -107,12 +99,12 @@ public class SellerCategoryController {
             categoryService.save(productCategory);
         } catch (Exception e) {
             map.put("msg", e.getMessage());
-            map.put("url", "/sell/seller/product/index");
+            map.put("url", "/sell/seller/category/index");
             return new ModelAndView("common/error");
         }
         // 成功返回
         map.put("msg", ResultEnum.SUCCESS.getMessage());
-        map.put("url", "/sell/seller/product/list");
+        map.put("url", "/sell/seller/category/list");
         return new ModelAndView("common/success");
     }
 }

@@ -36,7 +36,7 @@
                     <div class="form-group">
                         <label>图片</label>
                         <img height="300" width="300" src="${(productInfo.productIcon)!''}">
-                        <input name="productIcon" type="text" hidden value="${(productInfo.productIcon)!''}"/>
+                        <input name="productIcon" type="text" class="form-control" value="${(productInfo.productIcon)!''}"/>
                     </div>
                 <#--类目-->
                     <div class="form-group">
