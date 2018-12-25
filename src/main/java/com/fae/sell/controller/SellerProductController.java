@@ -3,19 +3,26 @@ package com.fae.sell.controller;
 import com.fae.sell.entity.ProductCategory;
 import com.fae.sell.entity.ProductInfo;
 import com.fae.sell.enums.ResultEnum;
+import com.fae.sell.exception.SellException;
+import com.fae.sell.form.ProductForm;
 import com.fae.sell.service.ProductCategoryService;
 import com.fae.sell.service.ProductInfoService;
+import com.fae.sell.utils.KeyUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -126,5 +133,48 @@ public class SellerProductController {
 
         return new ModelAndView("product/index", map);
 
+    }
+
+    /**
+     * 功能描述: 保存/修改商品信息
+     * @参数:
+     * @返回:
+     * @作者: lj
+     * @创建时间: 2018/12/25 9:34
+     */
+    @PostMapping("/save")
+    public ModelAndView save(@Valid ProductForm productForm,
+                             BindingResult bindingResult,
+                             Map<String, Object> map) {
+        // 判断，参数不正确抛异常
+        if(bindingResult.hasErrors()) {
+            map.put("msg", bindingResult.getFieldError().getDefaultMessage());
+            map.put("url", "/sell/seller/product/index");
+            return new ModelAndView("common/error");
+        }
+
+        ProductInfo productInfo = new ProductInfo();
+        try {
+            //如果productId不为空，表示是修改操作
+            if(!StringUtils.isEmpty(productForm.getProductId())) {
+                // 查询商品信息
+                productInfo = productInfoService.findById(productForm.getProductId());
+            } else {
+                //如果productId为空，表示是新增操作,添加productId
+                productForm.setProductId(KeyUtil.genUniqueKye());
+            }
+            // 拷贝
+            BeanUtils.copyProperties(productForm, productInfo);
+            // 执行更新操作
+            productInfoService.save(productInfo);
+        } catch (Exception e) {
+            map.put("msg", e.getMessage());
+            map.put("url", "/sell/seller/product/index");
+            return new ModelAndView("common/error");
+        }
+        // 成功返回
+        map.put("msg", ResultEnum.SUCCESS.getMessage());
+        map.put("url", "/sell/seller/product/list");
+        return new ModelAndView("common/success");
     }
 }

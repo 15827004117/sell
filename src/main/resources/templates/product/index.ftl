@@ -11,7 +11,7 @@
         <div class="container">
             <div class="row clearfix">
             <#-- 表单 -->
-                <form class="form-horizontal" role="form">
+                <form class="form-horizontal" method="post" action="/sell/seller/product/save">
                 <#--名称-->
                     <div class="form-group">
                         <label>名称</label><input type="text" class="form-control" name="productName"
@@ -35,15 +35,27 @@
                 <#--图片-->
                     <div class="form-group">
                         <label>图片</label>
-                        <img src="${(productInfo.productIcon)!''}" name="productIcon">
+                        <img height="300" width="300" src="${(productInfo.productIcon)!''}">
+                        <input name="productIcon" type="text" hidden value="${(productInfo.productIcon)!''}"/>
                     </div>
                 <#--类目-->
                     <div class="form-group">
                         <label>类目</label>
-
+                        <select name="categoryType" class="form-control">
+                            <#list categoryList as cate>
+                                <option value="${cate.categoryType}"
+                                    <#if (productInfo.categoryType)?? && productInfo.categoryType == cate.categoryType>
+                                        selected
+                                    </#if>
+                                    >
+                                    ${cate.categoryName}
+                                </option>
+                            </#list>
+                        </select>
                     </div>
+                    <input hidden type="text" name="productId" value="${(productInfo.productId)!''}">
+                    <button type="submit" class="btn btn-default btn-danger">提交</button>
                 </form>
-                <button type="button" class="btn btn-default btn-danger">按钮</button>
             </div>
         </div>
     </div>
