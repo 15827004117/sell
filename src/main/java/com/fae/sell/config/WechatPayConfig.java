@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 /**
- * 功能描述: 微信支付配置
+ * 功能描述: 微信支付API
  *
  * @作者: lj
  * @创建时间: 2018/12/19 11:02

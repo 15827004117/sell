@@ -48,6 +48,10 @@ public enum ResultEnum {
     PRODUCT_STATUS_ON_SUCCESS(25,"商品上架成功"),
 
     PRODUCT_STATUS_OFF_SUCCESS(26,"商品下架成功"),
+
+    USER_LOGIN_ERROR(27, "用户登陆错误"),
+
+    USER_LOGOUT_SUCCESS(28,"用户登出成功"),
     ;
 
     private Integer code;

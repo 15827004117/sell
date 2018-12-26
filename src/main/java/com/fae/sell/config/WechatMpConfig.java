@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 /**
- * 功能描述: 微信公众号API
+ * 功能描述: 微信公众平台API
  *
  * @作者: lj
  * @创建时间: 2018/12/18 14:38
