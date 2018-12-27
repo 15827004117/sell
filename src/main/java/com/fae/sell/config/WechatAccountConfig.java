@@ -30,4 +30,6 @@ public class WechatAccountConfig {
     private String keyPath; //商户证书路径
 
     private String notifyUrl; //微信支付通知回调地址
+
+    private String templateId; //微信模板Id
 }

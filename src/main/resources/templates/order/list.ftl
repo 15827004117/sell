@@ -82,5 +82,31 @@
     </div>
 </div>
 
+<script>
+
+    var websocket = null;
+    if('WebSocket' in window) {
+        websocket = new WebSocket('ws://localhost:8080/sell/webSocket');
+    }else {
+        alert("该浏览器不支持WebSocket");
+    }
+
+    websocket.onopen = function (event) {
+        console.log('websocket建立连接');
+    }
+
+    websocket.onclose = function (event) {
+        console.log('websocket连接关闭')
+    }
+
+    websocket.onmessage = function (event) {
+        console.log('websocket收到消息' + event)
+    }
+
+    window.onbeforeunload = function () {
+        websocket.close();
+    }
+
+</script>
 </body>
 </html>

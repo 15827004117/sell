@@ -52,6 +52,8 @@ public enum ResultEnum {
     USER_LOGIN_ERROR(27, "用户登陆错误"),
 
     USER_LOGOUT_SUCCESS(28,"用户登出成功"),
+
+    USER_NO_LOGIN_ERROR(29,"用户未登录，无法访问系统资源");
     ;
 
     private Integer code;

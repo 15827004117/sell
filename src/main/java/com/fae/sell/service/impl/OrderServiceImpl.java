@@ -15,7 +15,9 @@ import com.fae.sell.exception.SellException;
 import com.fae.sell.service.OrderService;
 import com.fae.sell.service.PayService;
 import com.fae.sell.service.ProductInfoService;
+import com.fae.sell.service.PushMessageService;
 import com.fae.sell.utils.KeyUtil;
+import com.fae.sell.webscoker.WebSocket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +55,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private PayService payService; //支付
+
+    @Autowired
+    private PushMessageService pushMessageService; //微信模板推送
+
+    @Autowired
+    private WebSocket webSocket; //webSocket发送消息
 
     /**
      * 功能描述:创建订单
@@ -106,6 +114,9 @@ public class OrderServiceImpl implements OrderService {
                 .map(e -> new CartDTO(e.getProductId(),e.getProductQuantity()))
                 .collect(Collectors.toList());
         productInfoService.decreaseStock(cartDTOList);
+
+        // 5.发送websocket消息
+        webSocket.sendMessage("您有新的订单了");
 
         return orderDTO;
     }
@@ -248,6 +259,14 @@ public class OrderServiceImpl implements OrderService {
             log.error("【完结订单】 订单更新失败 orderMaster={}", orderMaster);
             throw new SellException(ResultEnum.ORDER_UPDATE_FAIL);
         }
+
+        //微信推送模板消息
+        try {
+            pushMessageService.orderStatus(orderDTO);
+        } catch (Exception e) {
+            log.error("【微信推送模板消息】 推送失败", e.getMessage());
+        }
+
         return orderDTO;
     }
 
