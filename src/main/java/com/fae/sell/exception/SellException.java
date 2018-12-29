@@ -1,6 +1,7 @@
 package com.fae.sell.exception;
 
 import com.fae.sell.enums.ResultEnum;
+import lombok.Getter;
 
 /**
  * 功能描述:全局异常
@@ -8,6 +9,7 @@ import com.fae.sell.enums.ResultEnum;
  * @作者: lj
  * @创建时间: 2018/12/14 9:44
  */
+@Getter
 public class SellException extends RuntimeException {
 
     private Integer code;

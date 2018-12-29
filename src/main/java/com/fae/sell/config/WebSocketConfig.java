@@ -6,12 +6,13 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 /**
  * 功能描述:
- *
+ * @参数: 
+ * @返回: 
  * @作者: lj
- * @创建时间: 2018/12/27 16:28
+ * @创建时间: 2018/12/28 10:34
  */
 @Component
-public class WebSockerConfig {
+public class WebSocketConfig {
 
     @Bean
     public ServerEndpointExporter serverEndpointExporter() {

@@ -1,6 +1,7 @@
 package com.fae.sell.utils;
 
 import com.fae.sell.VO.ResultVO;
+import lombok.Getter;
 
 /**
  * 功能描述: ResultVo返回封装

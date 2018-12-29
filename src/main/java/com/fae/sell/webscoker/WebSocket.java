@@ -53,6 +53,5 @@ public class WebSocket {
                 log.info("【webSocket】 发送消息异常", e.getMessage());
             }
         }
-
     }
 }
