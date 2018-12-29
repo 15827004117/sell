@@ -25,6 +25,6 @@ public interface ProductCategoryMapper {
     })
     ProductCategory findByCategoryType(Integer categoryType);
 
-    @Update("update from product_category ")
+    @Update("update product_category set category_id = ${categoryId}")
     int update(Integer categoryId);
 }
